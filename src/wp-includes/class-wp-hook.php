@@ -1,6 +1,7 @@
 <?php
 /**
  * Plugin API: WP_Hook class
+ *this class is perform for one $tag only.
  *
  * @package WordPress
  * @subpackage Plugin
@@ -62,7 +63,6 @@ final class WP_Hook implements Iterator, ArrayAccess {
 	 *
 	 * @since 4.7.0
 	 *
-	 * @param string   $hook_name     The name of the filter to add the callback to.
 	 * @param callable $callback      The callback to be run when the filter is applied.
 	 * @param int      $priority      The order in which the functions associated with a particular filter
 	 *                                are executed. Lower numbers correspond with earlier execution,
@@ -70,8 +70,8 @@ final class WP_Hook implements Iterator, ArrayAccess {
 	 *                                in which they were added to the filter.
 	 * @param int      $accepted_args The number of arguments the function accepts.
 	 */
-	public function add_filter( $hook_name, $callback, $priority, $accepted_args ) {
-		$idx = _wp_filter_build_unique_id( $hook_name, $callback, $priority );
+	public function add_filter(  $callback, $priority, $accepted_args ) {
+		$idx = _wp_filter_build_unique_id(  $callback );
 
 		$priority_existed = isset( $this->callbacks[ $priority ] );
 
@@ -168,13 +168,12 @@ final class WP_Hook implements Iterator, ArrayAccess {
 	 *
 	 * @since 4.7.0
 	 *
-	 * @param string   $hook_name The filter hook to which the function to be removed is hooked.
 	 * @param callable $callback  The callback to be removed from running when the filter is applied.
 	 * @param int      $priority  The exact priority used when adding the original filter callback.
 	 * @return bool Whether the callback existed before it was removed.
 	 */
-	public function remove_filter( $hook_name, $callback, $priority ) {
-		$function_key = _wp_filter_build_unique_id( $hook_name, $callback, $priority );
+	public function remove_filter(  $callback, $priority ) {
+		$function_key = _wp_filter_build_unique_id(  $callback );
 
 		$exists = isset( $this->callbacks[ $priority ][ $function_key ] );
 
@@ -207,12 +206,12 @@ final class WP_Hook implements Iterator, ArrayAccess {
 	 *                  anything registered. When checking a specific function, the priority
 	 *                  of that hook is returned, or false if the function is not attached.
 	 */
-	public function has_filter( $hook_name = '', $callback = false ) {
+	public function has_filter(  $callback = false ) {
 		if ( false === $callback ) {
 			return $this->has_filters();
 		}
 
-		$function_key = _wp_filter_build_unique_id( $hook_name, $callback, false );
+		$function_key = _wp_filter_build_unique_id( $callback );
 
 		if ( ! $function_key ) {
 			return false;

@@ -118,7 +118,7 @@ function add_filter( $hook_name, $callback, $priority = 10, $accepted_args = 1 )
 		$wp_filter[ $hook_name ] = new WP_Hook();
 	}
 
-	$wp_filter[ $hook_name ]->add_filter( $hook_name, $callback, $priority, $accepted_args );
+	$wp_filter[ $hook_name ]->add_filter( $callback, $priority, $accepted_args );
 
 	return true;
 }
@@ -260,7 +260,7 @@ function has_filter( $hook_name, $callback = false ) {
 		return false;
 	}
 
-	return $wp_filter[ $hook_name ]->has_filter( $hook_name, $callback );
+	return $wp_filter[ $hook_name ]->has_filter( $callback );
 }
 
 /**
@@ -289,7 +289,7 @@ function remove_filter( $hook_name, $callback, $priority = 10 ) {
 	$r = false;
 
 	if ( isset( $wp_filter[ $hook_name ] ) ) {
-		$r = $wp_filter[ $hook_name ]->remove_filter( $hook_name, $callback, $priority );
+		$r = $wp_filter[ $hook_name ]->remove_filter( $callback, $priority );
 
 		if ( ! $wp_filter[ $hook_name ]->callbacks ) {
 			unset( $wp_filter[ $hook_name ] );
@@ -926,13 +926,12 @@ function _wp_call_all_hook( $args ) {
  *              and the function always returns a string.
  * @access private
  *
- * @param string   $hook_name Unused. The name of the filter to build ID for.
  * @param callable $callback  The function to generate ID for.
  * @param int      $priority  Unused. The order in which the functions
  *                            associated with a particular action are executed.
  * @return string Unique function ID for usage as array key.
  */
-function _wp_filter_build_unique_id( $hook_name, $callback, $priority ) {
+function _wp_filter_build_unique_id($callback) {
 	if ( is_string( $callback ) ) {
 		return $callback;
 	}
